@@ -15,7 +15,11 @@ public class Clipboard {
 	}
 	
 	public int getNumber(int index){
-		return content.get(index);
+		return n;
+	}
+	
+	public List< Character > getValue(){
+		return content;
 	}
 	
 	

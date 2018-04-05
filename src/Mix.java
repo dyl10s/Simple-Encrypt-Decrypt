@@ -6,7 +6,7 @@ public class Mix {
 
     private List < Character > message;
     private String undoCommands;
-    
+    private List < Clipboard > clipboards = new List < Clipboard >();
 
     private String userMessage;
     private Scanner scan;
@@ -150,15 +150,82 @@ public class Mix {
     }
 
     private void cut(int clipNum, int start, int stop) {
-        
+    	
+    	List< Character > cutChars = new List< Character >();
+    	
+    	for(int i = start; i <= stop; i++){
+			
+			char c = message.get(start);
+			if (c == ' ' || (int) c == 0){
+				c = '~';
+			}
+			
+			undoCommands = "b " + c + " " + start  + "\n" + 
+		            undoCommands;
+			
+			cutChars.append(message.get(start));
+			message.remove(start);
+			
+		}
+    	
+    	boolean clipExists = false;
+    	
+    	for (int i = 0; i < clipboards.size(); i++){
+    		if (clipboards.get(i).getNumber(i) == clipNum){
+    			clipExists = true;
+    			clipboards.set(clipNum, new Clipboard(clipNum, cutChars));
+    			System.out.println("Clip board => '" + clipboards.get(i).getValue().toString() + "'");
+    		}
+    	}
+    	
+    	if (clipExists == false){
+    		clipboards.append(new Clipboard(clipNum, cutChars));
+        	System.out.println("Clip board => '" + clipboards.getLast().getValue().toString() + "'");
+    	}
+    	
     }
 
     private void copy(int clipNum, int start, int stop) {
-       
+
+    	List< Character > cutChars = new List< Character >();
+    	
+    	for(int i = start; i <= stop; i++){
+			
+			char c = message.get(start);
+			if (c == ' ' || (int) c == 0){
+				c = '~';
+			}
+			
+			cutChars.append(message.get(i));
+			
+		}
+    	
+    	boolean clipExists = false;
+    	
+    	for (int i = 0; i < clipboards.size(); i++){
+    		if (clipboards.get(i).getNumber(i) == clipNum){
+    			clipExists = true;
+    			clipboards.set(clipNum, new Clipboard(clipNum, cutChars));
+    			System.out.println("Clip board => '" + clipboards.get(i).getValue().toString() + "'");
+    		}
+    	}
+    	
+    	if (clipExists == false){
+    		clipboards.append(new Clipboard(clipNum, cutChars));
+        	System.out.println("Clip board => '" + clipboards.getLast().getValue().toString() + "'");
+    	}
+    	
     }
 
     private void paste(int clipNum, int index) {
             
+
+    	for (int i = 0; i < clipboards.size(); i++){
+    		if (clipboards.get(i).getNumber(i) == clipNum){
+    			insertbefore(clipboards.get(i).getValue().toString(), index);
+    		}
+    	}
+    	
     }
          
     private void insertbefore(String clipBD, int index) {
@@ -208,11 +275,17 @@ public class Mix {
 
     private void helpPage() {
         System.out.println("Commands:");
-        System.out.println("\tQ filename    means, quit! " + " save to filename" );         
+        System.out.println("\t  Q filename    means, quit! " + " save to filename" );         
         System.out.println("\t  ~ is used for a space character" );     
         System.out.println("\t  b (character) (index) is used to add a character before an index" );    
         System.out.println("\t  r (start index) (end index) is used to remove a character from one position to another" );
-        System.out.println("\t .... etc" );     
+        System.out.println("\t  s (index) is used to replace a character with a space" );
+        System.out.println("\t  f (index1) (index2) is used to flip the position of 2 characters" );
+        System.out.println("\t  o (start index) (end index) (replacement character) is used to overwrite all characters in a range" );
+        System.out.println("\t  x (clipboard number) (start index) (end index) is used to cut a range of characters and store it to a clipboard" );
+        System.out.println("\t  c (clipboard number) (start index) (end index) is used to copy a range of characters and store it to a clipboard" );
+        System.out.println("\t  p (clipboard number) (index) is used to paste data from a clipboard to a specified position in the string" );
+    
         System.out.println("\th\tmeans to show this help page");
     }
 }
